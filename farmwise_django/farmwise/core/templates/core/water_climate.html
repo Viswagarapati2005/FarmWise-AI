@@ -1,0 +1,29 @@
+{% extends "core/base.html" %}
+{% block title %}Water & Climate{% endblock %}
+
+{% block content %}
+<div class="page-title"><i class="ti ti-droplet"></i> Water & Climate Suitability</div>
+
+<div style="background:var(--green-pale);border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:var(--green-dark);">
+  <strong>📊 Farmer-Reported Data:</strong> All water and climate values below are aggregated from farmer-submitted field experiences across Andhra Pradesh — not textbook estimates.
+</div>
+
+<div class="water-grid">
+  {% for crop in crops %}
+  <div class="water-card">
+    <div class="water-crop-header">
+      <div class="water-crop-name">{{ crop.name }}</div>
+      <span class="water-badge badge-{{ crop.water_need }}">{{ crop.water_need|title }} Water</span>
+    </div>
+    <div class="water-row"><i class="ti ti-thermometer"></i> {{ crop.temp_min }}–{{ crop.temp_max }}°C optimal</div>
+    <div class="water-row"><i class="ti ti-cloud-rain"></i> {{ crop.rainfall_min }}–{{ crop.rainfall_max }}mm rainfall</div>
+    <div class="water-row"><i class="ti ti-droplet"></i> Humidity {{ crop.humidity_min }}–{{ crop.humidity_max }}%</div>
+    <div class="water-row"><i class="ti ti-calendar"></i> {{ crop.growing_period }}</div>
+    <div style="margin-top:8px;padding-top:8px;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:11px;color:var(--muted)">{{ crop.review_count }} farmer reports</span>
+      <span class="tag-season tag-{{ crop.season }}">{{ crop.season|title }}</span>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

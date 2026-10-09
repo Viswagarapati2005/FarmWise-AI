@@ -1,0 +1,193 @@
+{% extends "core/base.html" %}
+{% block title %}Regions — Andhra Pradesh{% endblock %}
+
+{% block extra_head %}
+<style>
+.ap-map-svg { width:100%; max-width:680px; display:block; margin:0 auto; }
+.d-path { cursor:pointer; stroke:#fff; stroke-width:1.2; transition:opacity 0.2s, stroke-width 0.15s; }
+.d-path:hover { opacity:0.78; stroke-width:2; }
+.d-path.selected { stroke:#3B6D11; stroke-width:2.5; }
+.density-high { fill:#3B6D11; }
+.density-medium { fill:#639922; }
+.density-low { fill:#97C459; }
+.d-label { font-size:7.5px; fill:#fff; text-anchor:middle; pointer-events:none; font-family:'DM Sans',sans-serif; font-weight:600; }
+.zone-tabs { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
+.zone-tab { font-size:11px; padding:4px 12px; border-radius:10px; border:0.5px solid var(--border); background:var(--card); cursor:pointer; color:var(--muted); transition:all 0.15s; }
+.zone-tab:hover,.zone-tab.active { background:var(--green-pale); color:var(--green-dark); border-color:var(--green-mid); font-weight:600; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-title"><i class="ti ti-map-2"></i> Regions — Andhra Pradesh (26 Districts)</div>
+
+<div class="filter-bar">
+  <span class="filter-chip active" onclick="setLayer(this,'density')">Crop Density</span>
+  <span class="filter-chip" onclick="setLayer(this,'yield')">Avg Yield</span>
+  <span class="filter-chip" onclick="setLayer(this,'pest')">Pest Severity</span>
+  <span class="filter-chip" onclick="setLayer(this,'farmers')">Active Farmers</span>
+</div>
+
+<div class="map-container">
+  <div class="map-header">
+    <div class="map-title">Click any district to view crop data</div>
+    <div class="zone-legend">
+      <span class="zone-dot"><span class="dot" style="background:#3B6D11"></span> High</span>
+      <span class="zone-dot"><span class="dot" style="background:#639922"></span> Medium</span>
+      <span class="zone-dot"><span class="dot" style="background:#97C459"></span> Low</span>
+    </div>
+  </div>
+  <div class="map-svg-wrap">
+    <!-- Schematic AP map with all 26 districts in 4 agro-zones -->
+    <svg class="ap-map-svg" viewBox="0 0 680 460" xmlns="http://www.w3.org/2000/svg">
+      <rect width="680" height="460" fill="#EAF3DE" rx="8"/>
+
+      <!-- NORTH COASTAL ZONE -->
+      <text x="14" y="18" font-size="9" fill="#3B6D11" font-weight="700" font-family="DM Sans,sans-serif">NORTH COASTAL</text>
+      <rect class="d-path density-low" x="10" y="24" width="88" height="58" rx="5" onclick="showDistrict('Srikakulam')"/>
+      <text class="d-label" x="54" y="57">Srikakulam</text>
+      <rect class="d-path density-medium" x="104" y="24" width="88" height="58" rx="5" onclick="showDistrict('Vizianagaram')"/>
+      <text class="d-label" x="148" y="57">Vizianagaram</text>
+      <rect class="d-path density-high" x="198" y="24" width="88" height="58" rx="5" onclick="showDistrict('Visakhapatnam')"/>
+      <text class="d-label" x="242" y="57">Visakhapatnam</text>
+      <rect class="d-path density-medium" x="292" y="24" width="88" height="58" rx="5" onclick="showDistrict('Anakapalli')"/>
+      <text class="d-label" x="336" y="57">Anakapalli</text>
+
+      <!-- AGENCY ZONE -->
+      <text x="396" y="18" font-size="9" fill="#639922" font-weight="700" font-family="DM Sans,sans-serif">AGENCY</text>
+      <rect class="d-path density-low" x="392" y="24" width="88" height="58" rx="5" onclick="showDistrict('Alluri Sitarama Raju')"/>
+      <text class="d-label" x="436" y="50">Alluri</text>
+      <text class="d-label" x="436" y="62">Sitarama Raju</text>
+      <rect class="d-path density-low" x="486" y="24" width="88" height="58" rx="5" onclick="showDistrict('Parvathipuram Manyam')"/>
+      <text class="d-label" x="530" y="50">Parvathipuram</text>
+      <text class="d-label" x="530" y="62">Manyam</text>
+
+      <!-- GODAVARI DELTA ZONE -->
+      <text x="14" y="106" font-size="9" fill="#3B6D11" font-weight="700" font-family="DM Sans,sans-serif">GODAVARI DELTA</text>
+      <rect class="d-path density-high" x="10" y="112" width="100" height="58" rx="5" onclick="showDistrict('West Godavari')"/>
+      <text class="d-label" x="60" y="139">West</text>
+      <text class="d-label" x="60" y="151">Godavari</text>
+      <rect class="d-path density-high" x="116" y="112" width="100" height="58" rx="5" onclick="showDistrict('East Godavari')"/>
+      <text class="d-label" x="166" y="139">East</text>
+      <text class="d-label" x="166" y="151">Godavari</text>
+      <rect class="d-path density-high" x="222" y="112" width="100" height="58" rx="5" onclick="showDistrict('Kakinada')"/>
+      <text class="d-label" x="272" y="145">Kakinada</text>
+      <rect class="d-path density-high" x="328" y="112" width="100" height="58" rx="5" onclick="showDistrict('Konaseema')"/>
+      <text class="d-label" x="378" y="145">Konaseema</text>
+      <rect class="d-path density-high" x="434" y="112" width="100" height="58" rx="5" onclick="showDistrict('Eluru')"/>
+      <text class="d-label" x="484" y="145">Eluru</text>
+
+      <!-- KRISHNA DELTA ZONE -->
+      <text x="14" y="194" font-size="9" fill="#185FA5" font-weight="700" font-family="DM Sans,sans-serif">KRISHNA DELTA</text>
+      <rect class="d-path density-high" x="10" y="200" width="100" height="58" rx="5" onclick="showDistrict('Krishna')"/>
+      <text class="d-label" x="60" y="233">Krishna</text>
+      <rect class="d-path density-high" x="116" y="200" width="100" height="58" rx="5" onclick="showDistrict('NTR (Vijayawada)')"/>
+      <text class="d-label" x="166" y="227">NTR</text>
+      <text class="d-label" x="166" y="239">(Vijayawada)</text>
+      <rect class="d-path density-high" x="222" y="200" width="100" height="58" rx="5" onclick="showDistrict('Guntur')"/>
+      <text class="d-label" x="272" y="233">Guntur</text>
+      <rect class="d-path density-medium" x="328" y="200" width="100" height="58" rx="5" onclick="showDistrict('Palnadu')"/>
+      <text class="d-label" x="378" y="233">Palnadu</text>
+      <rect class="d-path density-medium" x="434" y="200" width="100" height="58" rx="5" onclick="showDistrict('Bapatla')"/>
+      <text class="d-label" x="484" y="233">Bapatla</text>
+
+      <!-- SOUTH COASTAL -->
+      <text x="14" y="282" font-size="9" fill="#BA7517" font-weight="700" font-family="DM Sans,sans-serif">SOUTH COASTAL</text>
+      <rect class="d-path density-medium" x="10" y="288" width="110" height="58" rx="5" onclick="showDistrict('Prakasam')"/>
+      <text class="d-label" x="65" y="321">Prakasam</text>
+      <rect class="d-path density-medium" x="126" y="288" width="110" height="58" rx="5" onclick="showDistrict('Nellore')"/>
+      <text class="d-label" x="181" y="321">Nellore</text>
+
+      <!-- RAYALASEEMA ZONE -->
+      <text x="260" y="282" font-size="9" fill="#633806" font-weight="700" font-family="DM Sans,sans-serif">RAYALASEEMA</text>
+      <rect class="d-path density-medium" x="256" y="288" width="92" height="58" rx="5" onclick="showDistrict('Kurnool')"/>
+      <text class="d-label" x="302" y="321">Kurnool</text>
+      <rect class="d-path density-medium" x="354" y="288" width="92" height="58" rx="5" onclick="showDistrict('Nandyal')"/>
+      <text class="d-label" x="400" y="321">Nandyal</text>
+      <rect class="d-path density-medium" x="452" y="288" width="92" height="58" rx="5" onclick="showDistrict('Kadapa')"/>
+      <text class="d-label" x="498" y="321">Kadapa</text>
+      <rect class="d-path density-low" x="550" y="288" width="92" height="58" rx="5" onclick="showDistrict('Sri Sathya Sai')"/>
+      <text class="d-label" x="596" y="315">Sri Sathya</text>
+      <text class="d-label" x="596" y="327">Sai</text>
+
+      <rect class="d-path density-low" x="256" y="356" width="92" height="58" rx="5" onclick="showDistrict('Anantapur')"/>
+      <text class="d-label" x="302" y="389">Anantapur</text>
+      <rect class="d-path density-medium" x="354" y="356" width="92" height="58" rx="5" onclick="showDistrict('Tirupati')"/>
+      <text class="d-label" x="400" y="389">Tirupati</text>
+      <rect class="d-path density-medium" x="452" y="356" width="92" height="58" rx="5" onclick="showDistrict('Chittoor')"/>
+      <text class="d-label" x="498" y="389">Chittoor</text>
+      <rect class="d-path density-low" x="550" y="356" width="92" height="58" rx="5" onclick="showDistrict('Annamayya')"/>
+      <text class="d-label" x="596" y="389">Annamayya</text>
+
+      <!-- Bay of Bengal label -->
+      <text x="590" y="200" font-size="10" fill="#185FA5" opacity="0.5" font-family="DM Sans,sans-serif" transform="rotate(90,590,200)">Bay of Bengal</text>
+    </svg>
+  </div>
+</div>
+
+<!-- DISTRICT POPUP -->
+<div class="district-popup" id="district-popup">
+  <div class="popup-title">
+    <span id="popup-name">Select a district</span>
+    <span class="popup-zone" id="popup-zone"></span>
+  </div>
+  <div class="popup-grid">
+    <div class="popup-item"><div class="popup-label">Top Crop</div><div class="popup-val" id="pp-crop">—</div></div>
+    <div class="popup-item"><div class="popup-label">Avg Yield</div><div class="popup-val accent" id="pp-yield">—</div></div>
+    <div class="popup-item"><div class="popup-label">Active Farmers</div><div class="popup-val" id="pp-farmers">—</div></div>
+    <div class="popup-item"><div class="popup-label">Common Pest</div><div class="popup-val" id="pp-pest">—</div></div>
+    <div class="popup-item"><div class="popup-label">Farmer Reviews</div><div class="popup-val" id="pp-reviews">—</div></div>
+    <div class="popup-item"><div class="popup-label">Agro Zone</div><div class="popup-val" id="pp-zone2">—</div></div>
+  </div>
+  <button class="action-btn" id="popup-ask-btn" style="font-size:13px;padding:8px 14px;border:0.5px solid var(--border);border-radius:20px;background:var(--green-pale);color:var(--green-dark);font-weight:600;">
+    <i class="ti ti-sparkles"></i> Ask FarmWise about this district
+  </button>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const DISTRICTS = {{ districts_json|safe }};
+const districtMap = {};
+DISTRICTS.forEach(d => { districtMap[d.name] = d; });
+
+let selectedEl = null;
+
+function showDistrict(name) {
+  const d = districtMap[name];
+  if (!d) return;
+
+  if (selectedEl) selectedEl.classList.remove('selected');
+  const els = document.querySelectorAll('.d-path');
+  els.forEach(el => {
+    if (el.getAttribute('onclick') === `showDistrict('${name}')`) {
+      el.classList.add('selected');
+      selectedEl = el;
+    }
+  });
+
+  document.getElementById('popup-name').textContent = name + ' District';
+  document.getElementById('popup-zone').textContent = d.zone || '';
+  document.getElementById('pp-crop').textContent = d.top_crop;
+  document.getElementById('pp-yield').textContent = d.avg_yield;
+  document.getElementById('pp-farmers').textContent = d.active_farmers.toLocaleString();
+  document.getElementById('pp-pest').textContent = d.common_pest;
+  document.getElementById('pp-reviews').textContent = d.review_count.toLocaleString() + ' reviews';
+  document.getElementById('pp-zone2').textContent = d.zone || '—';
+
+  const popup = document.getElementById('district-popup');
+  popup.classList.add('visible');
+  popup.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function setLayer(el, layer) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// Fetch from API on click for richer data
+document.getElementById('popup-ask-btn').addEventListener('click', () => {
+  const name = document.getElementById('popup-name').textContent.replace(' District', '');
+  alert('FarmWise AI: Fetching detailed insights for ' + name + '...\n\nIn production, this connects to the AI advisor endpoint.');
+});
+</script>
+{% endblock %}

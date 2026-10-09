@@ -1,0 +1,81 @@
+{% extends "core/base.html" %}
+{% block title %}Yield & Profit{% endblock %}
+
+{% block extra_head %}
+<style>
+.legend-dot { display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-title"><i class="ti ti-chart-bar"></i> Yield & Profit Analysis</div>
+
+<div class="chart-card">
+  <div class="chart-title">🌾 Yield per Acre by Rice Variety — Kharif 2024 (Quintals)</div>
+  {% for v in yield_data.varieties %}
+  <div class="h-bar-row">
+    <div class="h-bar-label">{{ v.name }}</div>
+    <div class="h-bar-outer">
+      <div class="h-bar-inner ybar" data-pct="{{ v.pct }}" style="width:0%;background:{% if forloop.counter == 1 %}#3B6D11{% elif forloop.counter == 2 %}#639922{% elif forloop.counter == 3 %}#97C459{% else %}#C0DD97{% endif %}">
+        <span class="h-bar-val">{{ v.yield }} q</span>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="chart-card">
+  <div class="chart-title">💰 Net Profit per Acre by Crop (₹) — AP Average</div>
+  {% for p in yield_data.profits %}
+  <div class="h-bar-row">
+    <div class="h-bar-label">{{ p.name }}</div>
+    <div class="h-bar-outer">
+      <div class="h-bar-inner pbar" data-pct="{{ p.pct }}" style="width:0%;background:{% if forloop.counter == 1 %}#BA7517{% elif forloop.counter == 2 %}#3B6D11{% elif forloop.counter == 3 %}#639922{% elif forloop.counter == 4 %}#97C459{% else %}#C0DD97{% endif %}">
+        <span class="h-bar-val">{{ p.profit }}</span>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="section-title">Best ROI This Season</div>
+<div class="roi-grid">
+  {% for r in yield_data.roi_leaders %}
+  <div class="roi-card">
+    <div class="roi-crop">{{ r.name }}</div>
+    <div class="roi-val">{{ r.roi }}</div>
+    <div class="roi-sub">avg return on investment</div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="chart-card" style="margin-top:14px">
+  <div class="chart-title">📈 MSP vs Market Price — Paddy (₹/quintal) 2024</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center;margin-top:8px;">
+    <div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">MSP (Govt.)</div>
+      <div style="font-size:22px;font-weight:700;color:var(--green-dark);">₹2,300</div>
+    </div>
+    <div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Market Price</div>
+      <div style="font-size:22px;font-weight:700;color:var(--amber);">₹2,480</div>
+    </div>
+    <div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Premium over MSP</div>
+      <div style="font-size:22px;font-weight:700;color:#185FA5;">+7.8%</div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.ybar,.pbar').forEach(bar => {
+      bar.style.width = bar.dataset.pct + '%';
+    });
+  }, 150);
+});
+</script>
+{% endblock %}

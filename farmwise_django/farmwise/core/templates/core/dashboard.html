@@ -1,0 +1,88 @@
+{% extends "core/base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-title"><i class="ti ti-layout-dashboard"></i> Dashboard</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label">Total Reviews</div>
+    <div class="stat-value">{{ total_reviews|default:"18,342" }}</div>
+    <div class="stat-sub">↑ 312 this week</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Active Farmers</div>
+    <div class="stat-value">{{ active_farmers|default:"12,489" }}</div>
+    <div class="stat-sub">across 26 AP districts</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Avg Yield Rating</div>
+    <div class="stat-value">{{ avg_yield_rating|default:"4.2" }}★</div>
+    <div class="stat-sub">Kharif 2024</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Pest Reports</div>
+    <div class="stat-value" style="color:#A32D2D;">{{ pest_reports|default:"63" }}</div>
+    <div class="stat-sub">last 7 days</div>
+  </div>
+</div>
+
+<div class="section-title">Top Reviewed Crops — Andhra Pradesh</div>
+<div class="crops-grid">
+  {% for crop in top_crops %}
+  <div class="crop-card">
+    <div class="crop-name">{{ crop.name }}</div>
+    <div class="crop-meta">
+      <span class="tag-season tag-{{ crop.season }}">{{ crop.season|title }}</span>
+    </div>
+    <div class="stars">{% for i in "12345" %}{% if forloop.counter <= crop.rating|floatformat:"0"|add:"0" %}★{% else %}☆{% endif %}{% endfor %}</div>
+    <div class="crop-reviews">{{ crop.review_count }} reviews · {{ crop.rating }}★</div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="section-title">Recent Reviews</div>
+<div class="reviews-stack">
+  {% for r in recent_reviews %}
+  <div class="review-card">
+    <div class="review-header">
+      <div class="avatar" style="background:{{ r.avatar_color }}">{{ r.initials }}</div>
+      <div>
+        <div class="reviewer-name">{{ r.farmer_name }}</div>
+        <div class="reviewer-loc">{{ r.location }} · {{ r.crop_name }}</div>
+      </div>
+      <div style="margin-left:auto;font-size:11px;color:var(--muted)">{{ r.time_ago }}</div>
+    </div>
+    <p class="review-text">{{ r.review_text }}</p>
+    <div class="tag-list">
+      {% for tag in r.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
+    </div>
+    <div class="review-actions">
+      <button class="action-btn upvote-btn" data-count="{{ r.upvotes }}">
+        <i class="ti ti-arrow-up"></i><span>{{ r.upvotes }}</span>
+      </button>
+      <button class="action-btn"><i class="ti ti-message"></i> {{ r.comments }} comments</button>
+      <button class="action-btn"><i class="ti ti-share"></i> Share</button>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="fab-wrap">
+  <button class="fab" onclick="window.location='{% url "reviews" %}'">
+    <i class="ti ti-plus"></i> Add Review
+  </button>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.upvote-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const span = this.querySelector('span');
+    span.textContent = parseInt(span.textContent) + 1;
+    this.style.color = 'var(--green-mid)';
+  });
+});
+</script>
+{% endblock %}

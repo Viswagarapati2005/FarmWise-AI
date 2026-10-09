@@ -1,0 +1,58 @@
+{% extends "core/base.html" %}
+{% block title %}Alerts{% endblock %}
+
+{% block content %}
+<div class="page-title">
+  <i class="ti ti-bell"></i> Alerts & Notifications
+  {% if unread_count %}
+  <span style="font-size:12px;background:var(--red-pale);color:var(--red-text);padding:3px 10px;border-radius:10px;font-weight:700;">
+    {{ unread_count }} unread
+  </span>
+  {% endif %}
+</div>
+
+<div class="alerts-stack">
+  {% for alert in alerts %}
+  <div class="alert-card {% if alert.unread %}unread{% endif %}" id="alert-{{ forloop.counter }}">
+    <div class="alert-icon icon-{{ alert.type }}">
+      <i class="ti {{ alert.icon }}"></i>
+    </div>
+    <div style="flex:1">
+      <div class="alert-title">
+        {{ alert.title }}
+        {% if alert.unread %}<span style="display:inline-block;width:7px;height:7px;background:var(--green-mid);border-radius:50%;margin-left:6px;vertical-align:middle;"></span>{% endif %}
+      </div>
+      <div class="alert-body">{{ alert.body }}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="alert-time">{{ alert.time_ago }}</div>
+        {% if alert.unread %}
+        <button class="action-btn" onclick="markRead({{ forloop.counter }})" style="font-size:11px;">Mark read</button>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div style="text-align:center;margin-top:20px">
+  <button class="action-btn" style="font-size:13px;padding:8px 16px;border:0.5px solid var(--border);border-radius:20px;background:var(--card);">
+    <i class="ti ti-settings"></i> Manage Notification Preferences
+  </button>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function markRead(id) {
+  const card = document.getElementById('alert-' + id);
+  card.classList.remove('unread');
+  const dot = card.querySelector('[style*="border-radius:50%"]');
+  if (dot) dot.remove();
+  const btn = card.querySelector('.action-btn');
+  if (btn) btn.remove();
+  // Update badge count
+  const badge = document.querySelector('[style*="unread"]');
+  // simple UI update
+}
+</script>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "core/base.html" %}
+{% block title %}Farmer Forum{% endblock %}
+
+{% block content %}
+<div class="page-title"><i class="ti ti-messages"></i> Farmer-to-Farmer Forum</div>
+
+<div class="filter-bar">
+  <a href="{% url 'forum' %}" class="filter-chip {% if not topic_filter %}active{% endif %}">All Topics</a>
+  {% for t in topics %}
+  <a href="{% url 'forum' %}?topic={{ t }}" class="filter-chip {% if topic_filter == t %}active{% endif %}">{{ t }}</a>
+  {% endfor %}
+</div>
+
+<div class="forum-stack">
+  {% for post in posts %}
+  <a href="#" class="forum-card" onclick="handleForumClick(event, '{{ post.question|escapejs }}')">
+    <div class="forum-q">{{ post.question }}</div>
+    <div class="forum-author">
+      {% if post.badge != 'none' %}
+        <span class="badge badge-{{ post.badge }}">{{ post.badge|title }}</span>
+      {% endif %}
+      <span style="font-size:12px;color:var(--muted)">{{ post.author }} · {{ post.author_role }}</span>
+    </div>
+    <div class="forum-meta">
+      <span><i class="ti ti-eye"></i> {{ post.views|floatformat:"0" }}</span>
+      <span><i class="ti ti-message"></i> {{ post.answers }} answers</span>
+      <span><i class="ti ti-heart"></i> {{ post.likes }}</span>
+      <span style="margin-left:auto">
+        <span class="tag-season tag-kharif" style="font-size:10px">{{ post.topic }}</span>
+      </span>
+    </div>
+  </a>
+  {% empty %}
+  <div style="text-align:center;padding:40px;color:var(--muted)">
+    <i class="ti ti-messages-off" style="font-size:48px;display:block;margin-bottom:12px"></i>
+    No posts found. <a href="{% url 'forum' %}" style="color:var(--green-mid)">View all</a>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="fab-wrap">
+  <button class="fab" onclick="postQuestion()"><i class="ti ti-plus"></i> Post Question</button>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function handleForumClick(e, question) {
+  e.preventDefault();
+  const answer = prompt(`FarmWise Forum — AI Advisor\n\nQuestion: "${question}"\n\nIn production, this loads the full thread with expert answers. Type your follow-up:`);
+  if (answer) alert('Your reply has been submitted to the community. Experts will respond within 24 hours.');
+}
+
+function postQuestion() {
+  const q = prompt('Post a new question to the Farmer Forum:\n(In production this opens a full form with crop/district tagging)');
+  if (q && q.trim()) alert('Question submitted!\n\n"' + q + '"\n\nExperts and fellow farmers will respond shortly.');
+}
+</script>
+{% endblock %}

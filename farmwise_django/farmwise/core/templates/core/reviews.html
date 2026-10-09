@@ -1,0 +1,75 @@
+{% extends "core/base.html" %}
+{% block title %}Crop Reviews{% endblock %}
+
+{% block content %}
+<div class="page-title"><i class="ti ti-star"></i> Crop Reviews</div>
+
+<div class="filter-bar">
+  <a href="{% url 'reviews' %}" class="filter-chip {% if not season_filter %}active{% endif %}">All Crops</a>
+  {% for s in seasons %}
+  <a href="{% url 'reviews' %}?season={{ s }}" class="filter-chip {% if season_filter == s %}active{% endif %}">{{ s }}</a>
+  {% endfor %}
+  <a href="{% url 'reviews' %}?season=kharif" class="filter-chip {% if season_filter == 'kharif' %}active{% endif %}">Kharif Only</a>
+  <a href="#" class="filter-chip">East Godavari</a>
+  <a href="#" class="filter-chip">⭐ 4+</a>
+</div>
+
+<div class="reviews-stack">
+  {% for r in reviews %}
+  <div class="review-card">
+    <div class="review-header">
+      <div class="avatar" style="background:{{ r.avatar_color }}">{{ r.initials }}</div>
+      <div>
+        <div class="reviewer-name">{{ r.farmer_name }}</div>
+        <div class="reviewer-loc">{{ r.location }} · {{ r.crop_name }} · {{ r.season }} 2024</div>
+      </div>
+      <div style="margin-left:auto">
+        <span class="tag-season tag-{{ r.season|lower }}">{{ r.season }}</span>
+      </div>
+    </div>
+
+    <div class="rating-grid">
+      <div class="rating-item">Yield <span class="stars">{% for i in "12345" %}{% if forloop.counter <= r.yield_rating %}★{% else %}☆{% endif %}{% endfor %}</span></div>
+      <div class="rating-item">Pest Resistance <span class="stars">{% for i in "12345" %}{% if forloop.counter <= r.pest_rating %}★{% else %}☆{% endif %}{% endfor %}</span></div>
+      <div class="rating-item">Water Efficiency <span class="stars">{% for i in "12345" %}{% if forloop.counter <= r.water_rating %}★{% else %}☆{% endif %}{% endfor %}</span></div>
+      <div class="rating-item">Profit <span class="stars">{% for i in "12345" %}{% if forloop.counter <= r.profit_rating %}★{% else %}☆{% endif %}{% endfor %}</span></div>
+    </div>
+
+    <p class="review-text">{{ r.review_text }}</p>
+
+    <div class="tag-list">
+      {% for tag in r.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
+    </div>
+
+    <div class="review-actions">
+      <button class="action-btn upvote-btn" data-count="{{ r.upvotes }}">
+        <i class="ti ti-arrow-up"></i><span>{{ r.upvotes }}</span>
+      </button>
+      <button class="action-btn"><i class="ti ti-message"></i> {{ r.comments }}</button>
+      <button class="action-btn"><i class="ti ti-share"></i></button>
+    </div>
+  </div>
+  {% empty %}
+  <div style="text-align:center;padding:40px;color:var(--muted)">
+    <i class="ti ti-star-off" style="font-size:48px;display:block;margin-bottom:12px"></i>
+    No reviews found for this filter. <a href="{% url 'reviews' %}" style="color:var(--green-mid)">View all</a>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="fab-wrap">
+  <button class="fab"><i class="ti ti-plus"></i> Write Review</button>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.upvote-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const span = this.querySelector('span');
+    span.textContent = parseInt(span.textContent) + 1;
+    this.style.color = 'var(--green-mid)';
+  });
+});
+</script>
+{% endblock %}

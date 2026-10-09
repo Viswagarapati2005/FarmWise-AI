@@ -1,0 +1,81 @@
+{% extends "core/base.html" %}
+{% block title %}Upload Field{% endblock %}
+
+{% block content %}
+<div class="page-title"><i class="ti ti-camera"></i> Upload Field Photos</div>
+
+<div class="upload-zone" id="drop-zone" onclick="triggerUpload()">
+  <div class="upload-icon"><i class="ti ti-camera-plus"></i></div>
+  <div class="upload-title">Tap to photograph your field</div>
+  <div class="upload-sub">AI will analyze crop health · Community can give feedback</div>
+  <input type="file" id="file-input" accept="image/*" capture="environment" style="display:none" onchange="handleFile(this)">
+</div>
+
+<div class="section-title">Tag Your Upload</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px" id="tag-container">
+  {% for tag in "BPT-5204 Rice,East Godavari Field,Vegetative Stage,Flowering,Ripening,Pest Damage,Disease Symptom,Water Stress"|split:"," %}
+  <button class="tag-btn" onclick="this.classList.toggle('active')">{{ tag }}</button>
+  {% endfor %}
+</div>
+
+<div class="section-title">Sample Upload with AI Analysis</div>
+<div class="sample-upload">
+  <div class="upload-preview"><i class="ti ti-leaf"></i></div>
+  <div style="font-size:13px;font-weight:600;margin-bottom:3px">BPT-5204 · Tillering Stage · East Godavari</div>
+  <div style="font-size:11px;color:var(--muted);margin-bottom:10px">Uploaded by Mahesh Reddy · 2 days ago · 34 community comments</div>
+  <div class="remedy-label">AI Health Analysis</div>
+  <div class="ai-box">
+    <strong>✅ Overall: Healthy (92% confidence)</strong>
+    Leaf colour indicates adequate nitrogen levels. Mild iron deficiency visible in lower leaves — consider 1% ferrous sulphate foliar spray. No pest damage detected. Tiller count looks strong — projected yield 26–28 quintals/acre if current conditions hold through panicle initiation.
+  </div>
+  <div class="review-actions" style="margin-top:12px">
+    <button class="action-btn"><i class="ti ti-arrow-up"></i> 89 helpful</button>
+    <button class="action-btn"><i class="ti ti-message"></i> 34 comments</button>
+    <button class="action-btn"><i class="ti ti-share"></i> Share</button>
+  </div>
+</div>
+
+<div id="preview-area" style="display:none;margin-top:16px">
+  <div class="section-title">Your Upload Preview</div>
+  <div class="sample-upload">
+    <img id="preview-img" style="width:100%;border-radius:8px;margin-bottom:12px;max-height:200px;object-fit:cover">
+    <div id="ai-loading" style="display:flex;align-items:center;gap:8px;color:var(--green-dark);font-size:13px">
+      <span class="alert-dot" style="background:var(--green-mid)"></span> Analyzing with FarmWise AI...
+    </div>
+    <div id="ai-result" style="display:none" class="ai-box"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function triggerUpload() { document.getElementById('file-input').click(); }
+
+function handleFile(input) {
+  if (!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('preview-img').src = e.target.result;
+    document.getElementById('preview-area').style.display = 'block';
+    document.getElementById('ai-loading').style.display = 'flex';
+    document.getElementById('ai-result').style.display = 'none';
+    setTimeout(() => {
+      document.getElementById('ai-loading').style.display = 'none';
+      document.getElementById('ai-result').style.display = 'block';
+      document.getElementById('ai-result').innerHTML = '<strong>🔍 Analysis Complete (87% confidence)</strong>Crop appears to be in early vegetative stage. Some yellowing observed — possible nitrogen deficiency. Recommend split urea application: 20 kg/acre now, followed by 15 kg at tillering. No signs of active pest damage. Ensure standing water depth is 3–5 cm for optimal early growth.';
+    }, 2500);
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+// Drag and drop
+const zone = document.getElementById('drop-zone');
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.background='var(--green-pale)'; });
+zone.addEventListener('dragleave', () => zone.style.background='');
+zone.addEventListener('drop', e => {
+  e.preventDefault(); zone.style.background='';
+  const dt = e.dataTransfer;
+  if (dt.files[0]) { document.getElementById('file-input').files = dt.files; handleFile(document.getElementById('file-input')); }
+});
+</script>
+{% endblock %}
